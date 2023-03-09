@@ -3,6 +3,7 @@ package kikibot
 import (
 	"fmt"
 
+	"github.com/fatih/color"
 	"kikibot/util"
 )
 
@@ -10,6 +11,8 @@ func HandleFmMessage(msg FmMessage) {
 	switch msg.Type {
 	case TypeMember:
 		handleMember(msg)
+	case TypeMessage:
+		handleMessage(msg)
 	}
 }
 
@@ -23,6 +26,13 @@ func handleMember(msg FmMessage) {
 	}
 }
 
+func handleMessage(msg FmMessage) {
+	switch msg.Event {
+	case EventNew:
+		handleMessageNew(msg)
+	}
+}
+
 // ------------------------------------------------------------------- //
 
 func handleMemberJoinQueue(msg FmMessage) {
@@ -30,9 +40,13 @@ func handleMemberJoinQueue(msg FmMessage) {
 		name := v.Username
 		if name == "" {
 			// 匿名用户
-			util.Info("匿名用户进入直播间")
+			util.Print("匿名用户进入直播间", color.FgHiCyan)
 		} else {
-			util.Info(fmt.Sprintf("用户 @%s 进入直播间", name))
+			util.Print(fmt.Sprintf("用户 @%s 进入直播间", name), color.FgHiCyan)
 		}
 	}
+}
+
+func handleMessageNew(msg FmMessage) {
+	util.Print(fmt.Sprintf("@%s: %s", msg.User.Username, msg.Message), color.FgGreen)
 }
